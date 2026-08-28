@@ -7,628 +7,1172 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--bg:#0a0a0f;--bg2:#111118;--card:#16161f;--neon:#00e5ff;--neon-dim:#00b8cc;--glow:rgba(0,229,255,0.15);--glow-md:rgba(0,229,255,0.30);--txt:#f0f0f5;--txt2:#9090aa;--muted:#5a5a7a;--border:rgba(0,229,255,0.12);--borderact:rgba(0,229,255,0.35);--red:#ff4466;--green:#00ff88;--yellow:#ffd700;}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--card:#16161f;
+  --neon:#00e5ff;--neon-dim:#00b8cc;
+  --glow:rgba(0,229,255,0.12);--glow-md:rgba(0,229,255,0.25);
+  --txt:#f0f0f5;--txt2:#9090aa;--muted:#5a5a7a;
+  --border:rgba(0,229,255,0.15);--borderact:rgba(0,229,255,0.5);
+  --red:#ff4466;--green:#00ff88;--yellow:#ffd700;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{width:100%;height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;font-size:14px;}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--neon-dim);border-radius:2px;}
-.layout{display:grid;grid-template-rows:52px 1fr 190px;grid-template-columns:270px 1fr;height:100vh;}
-.hd{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg2);border-bottom:1px solid var(--border);}
-.sb{grid-row:2/4;overflow-y:auto;padding:12px;background:var(--bg2);border-right:1px solid var(--border);}
-.cv{position:relative;overflow:hidden;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;font-size:13px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--neon-dim);border-radius:2px;}
+
+/* 레이아웃 */
+.layout{display:grid;grid-template-rows:56px 1fr 200px;grid-template-columns:260px 1fr;height:100vh;}
+.hd{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;
+    padding:0 20px;background:var(--bg2);border-bottom:2px solid var(--border);}
+.sb{grid-row:2/4;overflow-y:auto;padding:12px;background:var(--bg2);
+    border-right:1px solid var(--border);}
+.cv{position:relative;overflow:hidden;background:#0a0a0f;}
 .gp{border-top:1px solid var(--border);overflow:hidden;background:var(--bg2);}
-.logo{font-size:20px;font-weight:700;color:var(--neon);letter-spacing:2px;text-shadow:0 0 20px var(--neon);}
-.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1px;}
-.sim-badge{margin-left:14px;padding-left:14px;border-left:1px solid var(--border);font-size:12px;color:var(--txt2);}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--txt2);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Inter',sans-serif;}
+
+/* 헤더 */
+.logo{font-size:22px;font-weight:700;color:var(--neon);letter-spacing:3px;
+      text-shadow:0 0 30px var(--neon),0 0 60px rgba(0,229,255,0.3);}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+.sim-badge{margin-left:16px;padding:4px 12px;border-radius:20px;
+           border:1px solid var(--border);background:var(--glow);
+           font-size:12px;color:var(--neon);font-weight:500;}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;
+     padding:6px 12px;border-radius:8px;border:1px solid var(--border);
+     background:var(--card);color:var(--txt2);font-size:11px;font-weight:500;
+     cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Inter',sans-serif;}
 .btn:hover{border-color:var(--borderact);color:var(--neon);background:var(--glow);}
-.btn.active{border-color:var(--neon);color:var(--neon);background:var(--glow-md);}
+.btn.on{border-color:var(--neon);color:var(--neon);background:var(--glow-md);
+        box-shadow:0 0 12px rgba(0,229,255,0.2);}
 .btn.danger{color:var(--red);border-color:rgba(255,68,102,.3);}
 .btn.danger:hover{background:rgba(255,68,102,.1);}
-.btn.ico{width:32px;height:32px;padding:0;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
-.card-title{font-size:10px;font-weight:600;color:var(--neon-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
-.sl-group{margin-bottom:12px;}
-.sl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:11px;color:var(--txt2);}
-.sl-val{font-family:'JetBrains Mono',monospace;color:var(--neon);font-size:11px;background:var(--glow);padding:2px 7px;border-radius:4px;border:1px solid var(--border);}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--bg);border-radius:2px;outline:none;cursor:pointer;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--neon);box-shadow:0 0 8px var(--neon);cursor:pointer;transition:transform .15s;}
+.btn.ico{width:34px;height:34px;padding:0;border-radius:8px;font-size:15px;}
+
+/* 재생버튼 강조 */
+.play-btn{width:42px;height:42px;border-radius:50%;border:2px solid var(--neon);
+          background:var(--glow-md);color:var(--neon);font-size:18px;
+          cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;
+          box-shadow:0 0 16px rgba(0,229,255,0.3);}
+.play-btn:hover{background:rgba(0,229,255,0.35);box-shadow:0 0 24px rgba(0,229,255,0.5);}
+.play-btn.on{background:rgba(0,229,255,0.3);}
+
+/* 카드 */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+      padding:14px;margin-bottom:10px;}
+.card-title{font-size:10px;font-weight:700;color:var(--neon-dim);letter-spacing:2px;
+            text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* 슬라이더 */
+.sl-group{margin-bottom:14px;}
+.sl-row{display:flex;justify-content:space-between;align-items:center;
+        margin-bottom:6px;font-size:12px;color:var(--txt2);}
+.sl-val{font-family:'JetBrains Mono',monospace;color:var(--neon);font-size:11px;
+        background:var(--glow);padding:3px 8px;border-radius:6px;border:1px solid var(--border);}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;
+                  background:rgba(0,229,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);
+  cursor:pointer;transition:transform .15s;}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3);}
-.sim-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px;}
-.sim-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:9px;cursor:pointer;transition:all .2s;}
+
+/* 탭 */
+.sim-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.sim-tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;
+         border-radius:8px;border:1px solid var(--border);background:var(--bg);
+         color:var(--muted);font-size:9px;cursor:pointer;transition:all .2s;}
 .sim-tab:hover{color:var(--txt2);border-color:var(--borderact);}
-.sim-tab.active{border-color:var(--neon);color:var(--neon);background:var(--glow);}
-.sim-tab .ico2{font-size:16px;}
-.planet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
-.planet-btn{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 3px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:8px;cursor:pointer;transition:all .2s;}
+.sim-tab.on{border-color:var(--neon);color:var(--neon);background:var(--glow);
+            box-shadow:0 0 8px rgba(0,229,255,0.15);}
+.sim-tab .ico2{font-size:18px;}
+
+/* 행성 */
+.planet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.planet-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;
+            border-radius:8px;border:1px solid var(--border);background:var(--bg);
+            color:var(--muted);font-size:8px;cursor:pointer;transition:all .2s;}
 .planet-btn:hover{border-color:var(--borderact);color:var(--txt2);}
-.planet-btn.active{border-color:var(--neon);color:var(--neon);background:var(--glow);}
-.planet-btn .em{font-size:18px;}
-.planet-g{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--neon);}
-.skin-grid{display:flex;gap:5px;flex-wrap:wrap;}
-.skin-btn{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:8px;cursor:pointer;transition:all .2s;}
+.planet-btn.on{border-color:var(--neon);color:var(--neon);background:var(--glow);}
+.planet-btn .em{font-size:20px;}
+.planet-g{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--neon);margin-top:1px;}
+
+/* 스킨 */
+.skin-grid{display:flex;gap:6px;flex-wrap:wrap;}
+.skin-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;
+          border-radius:8px;border:1px solid var(--border);background:var(--bg);
+          color:var(--muted);font-size:8px;cursor:pointer;transition:all .2s;}
 .skin-btn:hover{border-color:var(--borderact);color:var(--txt2);}
-.skin-btn.active{border-color:var(--neon);color:var(--neon);background:var(--glow);}
-.skin-btn .em{font-size:18px;}
-.tc-wrap{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-.tc-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);background:var(--glow);border:1px solid var(--border);padding:3px 8px;border-radius:4px;min-width:56px;text-align:center;}
-.tc-speed{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--yellow);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);padding:3px 6px;border-radius:4px;}
-.formula{position:absolute;top:10px;right:10px;z-index:10;background:rgba(10,10,20,.9);border:1px solid var(--border);border-radius:10px;padding:10px 13px;backdrop-filter:blur(12px);min-width:185px;}
-.formula-title{font-size:9px;font-weight:600;color:var(--neon-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-.f-item{margin-bottom:4px;}
-.f-label{font-size:8px;color:var(--muted);}
-.f-text{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);}
-.divider{height:1px;background:var(--border);margin:7px 0;}
-.stat-row{display:flex;justify-content:space-between;margin-bottom:3px;}
-.stat-lbl{font-size:9px;color:var(--muted);}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);}
-.graph-area{display:grid;grid-template-columns:1fr 1fr;padding:8px 12px;gap:10px;height:190px;}
+.skin-btn.on{border-color:var(--neon);color:var(--neon);background:var(--glow);}
+.skin-btn .em{font-size:20px;}
+
+/* 시간 컨트롤 */
+.tc-wrap{display:flex;align-items:center;gap:8px;}
+.tc-time{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--neon);
+         background:var(--glow);border:1px solid var(--border);padding:4px 10px;
+         border-radius:8px;min-width:64px;text-align:center;font-weight:500;}
+.tc-speed{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--yellow);
+          background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.25);
+          padding:3px 7px;border-radius:6px;}
+.scrub{width:110px;}
+
+/* 공식 오버레이 */
+.formula-box{position:absolute;top:12px;right:12px;z-index:10;
+             background:rgba(8,8,16,0.92);border:1px solid var(--border);
+             border-radius:14px;padding:14px 16px;backdrop-filter:blur(16px);
+             min-width:210px;max-width:240px;}
+.formula-box-title{font-size:10px;font-weight:700;color:var(--neon);letter-spacing:2px;
+                   text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;
+                   border-bottom:1px solid var(--border);display:flex;
+                   justify-content:space-between;align-items:center;}
+.f-section{margin-bottom:10px;}
+.f-section-title{font-size:9px;color:var(--muted);letter-spacing:1px;
+                 text-transform:uppercase;margin-bottom:6px;font-weight:600;}
+.f-item{margin-bottom:6px;padding:6px 8px;background:rgba(0,229,255,0.05);
+        border-radius:6px;border-left:2px solid var(--neon-dim);}
+.f-label{font-size:9px;color:var(--muted);margin-bottom:2px;}
+.f-text{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--neon);font-weight:500;}
+.divider{height:1px;background:var(--border);margin:8px 0;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;
+          margin-bottom:4px;padding:3px 0;}
+.stat-lbl{font-size:10px;color:var(--muted);}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neon);font-weight:500;}
+
+/* 그래프 */
+.graph-area{display:grid;grid-template-columns:1fr 1fr;padding:10px 14px;gap:12px;height:200px;}
 .graph-panel{position:relative;}
-.graph-title{font-size:9px;font-weight:600;color:var(--neon-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.graph-empty{height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;}
-@keyframes pop-in{0%{transform:scale(0) rotate(-10deg);opacity:0;}60%{transform:scale(1.2) rotate(3deg);opacity:1;}100%{transform:scale(1) rotate(0);opacity:1;}}
-.bubble{position:absolute;background:var(--yellow);color:#1a1000;font-weight:700;font-size:13px;padding:5px 11px;border-radius:10px;pointer-events:none;z-index:20;animation:pop-in .4s cubic-bezier(.34,1.56,.64,1) forwards;white-space:nowrap;}
-.bubble::after{content:'';position:absolute;bottom:-7px;left:12px;border:7px solid transparent;border-top-color:var(--yellow);border-bottom:none;}
-@keyframes pfly{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
-.particle{position:absolute;width:7px;height:7px;border-radius:50%;pointer-events:none;animation:pfly .8s ease-out forwards;}
+.graph-title{font-size:10px;font-weight:700;color:var(--neon-dim);letter-spacing:1px;
+             text-transform:uppercase;margin-bottom:5px;}
+.graph-empty{height:100%;display:flex;align-items:center;justify-content:center;
+             color:var(--muted);font-size:11px;}
+
+/* 말풍선 */
+@keyframes pop-in{
+  0%{transform:scale(0) rotate(-10deg);opacity:0;}
+  60%{transform:scale(1.15) rotate(3deg);opacity:1;}
+  100%{transform:scale(1) rotate(0);opacity:1;}
+}
+.bubble{position:absolute;background:var(--yellow);color:#1a1000;font-weight:700;
+        font-size:14px;padding:6px 13px;border-radius:12px;pointer-events:none;
+        z-index:20;animation:pop-in .4s cubic-bezier(.34,1.56,.64,1) forwards;white-space:nowrap;}
+.bubble::after{content:'';position:absolute;bottom:-8px;left:14px;
+               border:8px solid transparent;border-top-color:var(--yellow);border-bottom:none;}
+
+/* 파티클 */
+@keyframes pfly{0%{transform:translate(0,0) scale(1);opacity:1;}
+                100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
+.particle{position:absolute;width:8px;height:8px;border-radius:50%;
+          pointer-events:none;animation:pfly .9s ease-out forwards;}
+
+/* 툴팁 힌트 */
+.hint{position:absolute;bottom:12px;left:12px;font-size:11px;color:var(--muted);
+      background:rgba(8,8,16,0.8);padding:6px 10px;border-radius:8px;
+      border:1px solid var(--border);}
 </style>
 </head>
 <body>
 <div class="layout">
-  <!-- 헤더 -->
+
+  <!-- ── 헤더 ── -->
   <div class="hd">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div><div class="logo">PhysicX</div><div class="logo-sub">당곡고등학교 물리 시뮬레이터</div></div>
+      <div>
+        <div class="logo">PhysicX</div>
+        <div class="logo-sub">당곡고등학교 물리 시뮬레이터</div>
+      </div>
       <div class="sim-badge" id="simBadge">🎯 포물선 운동</div>
     </div>
+
+    <!-- 시간 컨트롤 -->
     <div class="tc-wrap">
       <button class="btn ico" onclick="resetSim()" title="처음으로">⏮</button>
-      <button class="btn ico" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="btn ico" onclick="setSpeed(-1)" title="역재생">◀◀</button>
       <span class="tc-time" id="tcTime">0.00s</span>
-      <input type="range" id="scrubber" min="0" max="10" step="0.01" value="0" style="width:90px" oninput="scrub(this.value)"/>
+      <input type="range" class="scrub" id="scrubber" min="0" max="10" step="0.01" value="0"
+             oninput="scrub(this.value)"/>
       <span class="tc-speed" id="speedLabel">1x</span>
-      <button class="btn" style="font-size:10px;padding:4px 7px" onclick="setSpeed(0.25)">0.25x</button>
-      <button class="btn" style="font-size:10px;padding:4px 7px" onclick="setSpeed(0.5)">0.5x</button>
-      <button class="btn active" id="sp1" style="font-size:10px;padding:4px 7px" onclick="setSpeed(1)">1x</button>
-      <button class="btn" style="font-size:10px;padding:4px 7px" onclick="setSpeed(2)">2x</button>
+      <button class="btn" style="font-size:10px;padding:4px 8px" onclick="setSpeed(0.25)">0.25x</button>
+      <button class="btn" style="font-size:10px;padding:4px 8px" onclick="setSpeed(0.5)">0.5x</button>
+      <button class="btn on" id="spBtn1" style="font-size:10px;padding:4px 8px" onclick="setSpeed(1)">1x</button>
+      <button class="btn" style="font-size:10px;padding:4px 8px" onclick="setSpeed(2)">2x</button>
     </div>
   </div>
 
-  <!-- 사이드바 -->
+  <!-- ── 사이드바 ── -->
   <div class="sb">
+
+    <!-- 시뮬레이션 선택 -->
     <div class="card">
-      <div class="card-title">🔬 시뮬레이션 선택</div>
+      <div class="card-title">🔬 시뮬레이션</div>
       <div class="sim-tabs">
-        <button class="sim-tab active" onclick="setSim('projectile',this)"><span class="ico2">🎯</span><span>포물선 운동</span></button>
-        <button class="sim-tab" onclick="setSim('freefall',this)"><span class="ico2">⬇️</span><span>자유 낙하</span></button>
-        <button class="sim-tab" onclick="setSim('uniform',this)"><span class="ico2">➡️</span><span>등속 운동</span></button>
-        <button class="sim-tab" onclick="setSim('uniformAccel',this)"><span class="ico2">🏎️</span><span>등가속도</span></button>
-        <button class="sim-tab" onclick="setSim('newton',this)"><span class="ico2">🍎</span><span>뉴턴 모드</span></button>
+        <button class="sim-tab on" onclick="setSim('projectile',this)">
+          <span class="ico2">🎯</span><span>포물선 운동</span>
+        </button>
+        <button class="sim-tab" onclick="setSim('freefall',this)">
+          <span class="ico2">⬇️</span><span>자유 낙하</span>
+        </button>
+        <button class="sim-tab" onclick="setSim('uniform',this)">
+          <span class="ico2">➡️</span><span>등속 운동</span>
+        </button>
+        <button class="sim-tab" onclick="setSim('uniformAccel',this)">
+          <span class="ico2">🏎️</span><span>등가속도</span>
+        </button>
+        <button class="sim-tab" onclick="setSim('newton',this)">
+          <span class="ico2">🍎</span><span>뉴턴 모드</span>
+        </button>
       </div>
     </div>
+
+    <!-- 변수 조절 -->
     <div class="card">
       <div class="card-title">⚙️ 변수 조절</div>
       <div id="sliderV0" class="sl-group">
-        <div class="sl-row"><span>초기 속도 v₀</span><span class="sl-val" id="valV0">20.0 m/s</span></div>
-        <input type="range" min="1" max="60" step="0.5" value="20" oninput="setParam('v0',this.value,'valV0','m/s')"/>
+        <div class="sl-row">
+          <span>초기 속도 v₀</span>
+          <span class="sl-val" id="valV0">20.0 m/s</span>
+        </div>
+        <input type="range" min="1" max="60" step="0.5" value="20"
+               oninput="setParam('v0',this.value,'valV0','m/s')"/>
       </div>
       <div id="sliderAngle" class="sl-group">
-        <div class="sl-row"><span>발사 각도 θ</span><span class="sl-val" id="valAngle">45.0 °</span></div>
-        <input type="range" min="1" max="89" step="1" value="45" oninput="setParam('angle',this.value,'valAngle','°')"/>
+        <div class="sl-row">
+          <span>발사 각도 θ</span>
+          <span class="sl-val" id="valAngle">45.0 °</span>
+        </div>
+        <input type="range" min="1" max="89" step="1" value="45"
+               oninput="setParam('angle',this.value,'valAngle','°')"/>
       </div>
       <div id="sliderAccel" class="sl-group" style="display:none">
-        <div class="sl-row"><span>가속도 a</span><span class="sl-val" id="valAccel">2.0 m/s²</span></div>
-        <input type="range" min="0.1" max="20" step="0.1" value="2" oninput="setParam('accel',this.value,'valAccel','m/s²')"/>
+        <div class="sl-row">
+          <span>가속도 a</span>
+          <span class="sl-val" id="valAccel">2.0 m/s²</span>
+        </div>
+        <input type="range" min="0.1" max="20" step="0.1" value="2"
+               oninput="setParam('accel',this.value,'valAccel','m/s²')"/>
       </div>
       <div class="sl-group">
-        <div class="sl-row"><span>중력 가속도 g</span><span class="sl-val" id="valG">9.8 m/s²</span></div>
-        <input type="range" id="sliderG" min="0.01" max="30" step="0.01" value="9.8" oninput="setParam('g',this.value,'valG','m/s²')"/>
+        <div class="sl-row">
+          <span>중력 가속도 g</span>
+          <span class="sl-val" id="valG">9.8 m/s²</span>
+        </div>
+        <input type="range" id="sliderG" min="0.01" max="30" step="0.01" value="9.8"
+               oninput="setParam('g',this.value,'valG','m/s²')"/>
       </div>
     </div>
+
+    <!-- 행성 선택 -->
     <div class="card">
-      <div class="card-title">🌍 행성 선택</div>
+      <div class="card-title">🌍 행성 / 중력 환경</div>
       <div class="planet-grid">
-        <button class="planet-btn active" onclick="setPlanet('earth',this)"><span class="em">🌍</span><span>지구</span><span class="planet-g">9.8m/s²</span></button>
-        <button class="planet-btn" onclick="setPlanet('moon',this)"><span class="em">🌙</span><span>달</span><span class="planet-g">1.62m/s²</span></button>
-        <button class="planet-btn" onclick="setPlanet('mars',this)"><span class="em">🔴</span><span>화성</span><span class="planet-g">3.72m/s²</span></button>
-        <button class="planet-btn" onclick="setPlanet('jupiter',this)"><span class="em">🟠</span><span>목성</span><span class="planet-g">24.79m/s²</span></button>
-        <button class="planet-btn" onclick="setPlanet('space',this)"><span class="em">🌌</span><span>우주</span><span class="planet-g">0.01m/s²</span></button>
+        <button class="planet-btn on" onclick="setPlanet('earth',this)">
+          <span class="em">🌍</span><span>지구</span><span class="planet-g">9.8</span>
+        </button>
+        <button class="planet-btn" onclick="setPlanet('moon',this)">
+          <span class="em">🌙</span><span>달</span><span class="planet-g">1.62</span>
+        </button>
+        <button class="planet-btn" onclick="setPlanet('mars',this)">
+          <span class="em">🔴</span><span>화성</span><span class="planet-g">3.72</span>
+        </button>
+        <button class="planet-btn" onclick="setPlanet('jupiter',this)">
+          <span class="em">🟠</span><span>목성</span><span class="planet-g">24.79</span>
+        </button>
+        <button class="planet-btn" onclick="setPlanet('space',this)">
+          <span class="em">🌌</span><span>우주</span><span class="planet-g">0.01</span>
+        </button>
       </div>
     </div>
+
+    <!-- 스킨 -->
     <div class="card">
-      <div class="card-title">🎨 스킨 선택</div>
+      <div class="card-title">🎨 물체 스킨</div>
       <div class="skin-grid">
-        <button class="skin-btn active" onclick="setSkin('ball',this)"><span class="em">⚽</span></button>
-        <button class="skin-btn" onclick="setSkin('cat',this)"><span class="em">🐱</span></button>
-        <button class="skin-btn" onclick="setSkin('rocket',this)"><span class="em">🚀</span></button>
-        <button class="skin-btn" onclick="setSkin('apple',this)"><span class="em">🍎</span></button>
-        <button class="skin-btn" onclick="setSkin('star',this)"><span class="em">⭐</span></button>
+        <button class="skin-btn on" onclick="setSkin('ball',this)">
+          <span class="em">⚽</span><span>공</span>
+        </button>
+        <button class="skin-btn" onclick="setSkin('cat',this)">
+          <span class="em">🐱</span><span>고양이</span>
+        </button>
+        <button class="skin-btn" onclick="setSkin('rocket',this)">
+          <span class="em">🚀</span><span>로켓</span>
+        </button>
+        <button class="skin-btn" onclick="setSkin('apple',this)">
+          <span class="em">🍎</span><span>사과</span>
+        </button>
+        <button class="skin-btn" onclick="setSkin('star',this)">
+          <span class="em">⭐</span><span>별</span>
+        </button>
       </div>
     </div>
-    <button class="btn danger" style="width:100%;margin-top:4px" onclick="resetSim()">🔄 초기화</button>
+
+    <button class="btn danger" style="width:100%;margin-top:2px;padding:9px;"
+            onclick="resetSim()">🔄 처음부터 다시</button>
   </div>
 
-  <!-- 캔버스 -->
+  <!-- ── 캔버스 ── -->
   <div class="cv">
     <canvas id="simCanvas" style="display:block;width:100%;height:100%;"></canvas>
-    <div class="formula">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
-        <div class="formula-title" style="margin:0;border:none;padding:0;">📐 적용 공식</div>
-        <button class="btn ico" style="width:18px;height:18px;font-size:9px;" onclick="toggleFormula()">✕</button>
+
+    <!-- 공식 오버레이 -->
+    <div class="formula-box" id="formulaBox">
+      <div class="formula-box-title">
+        <span>📐 공식 & 현재 값</span>
+        <button class="btn" style="width:20px;height:20px;font-size:9px;padding:0;"
+                onclick="toggleFormula()">✕</button>
       </div>
       <div id="formulaList"></div>
       <div class="divider"></div>
-      <div class="formula-title" style="margin-bottom:5px;">📊 현재 값</div>
-      <div class="stat-row"><span class="stat-lbl">t</span><span class="stat-val" id="stT">0.000 s</span></div>
-      <div class="stat-row"><span class="stat-lbl">x</span><span class="stat-val" id="stX">0.00 m</span></div>
-      <div class="stat-row" id="stYRow"><span class="stat-lbl">y</span><span class="stat-val" id="stY">0.00 m</span></div>
-      <div class="stat-row"><span class="stat-lbl">속력</span><span class="stat-val" id="stV">0.00 m/s</span></div>
+      <div style="font-size:10px;font-weight:700;color:var(--neon-dim);
+                  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">
+        실시간 측정값
+      </div>
+      <div class="stat-row">
+        <span class="stat-lbl">⏱ 시간 t</span>
+        <span class="stat-val" id="stT">0.000 s</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-lbl">↔ 수평 거리 x</span>
+        <span class="stat-val" id="stX">0.00 m</span>
+      </div>
+      <div class="stat-row" id="stYRow">
+        <span class="stat-lbl">↕ 수직 높이 y</span>
+        <span class="stat-val" id="stY">0.00 m</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-lbl">⚡ 속력 v</span>
+        <span class="stat-val" id="stV">0.00 m/s</span>
+      </div>
+      <div class="stat-row" id="stVxRow">
+        <span class="stat-lbl">→ 수평 속도 vx</span>
+        <span class="stat-val" id="stVx">0.00 m/s</span>
+      </div>
+      <div class="stat-row" id="stVyRow">
+        <span class="stat-lbl">↑ 수직 속도 vy</span>
+        <span class="stat-val" id="stVy">0.00 m/s</span>
+      </div>
     </div>
+
+    <!-- 공식 보기 버튼 (숨겼을 때) -->
+    <button id="formulaShowBtn" class="btn on"
+            style="display:none;position:absolute;top:12px;right:12px;z-index:10;"
+            onclick="toggleFormula()">📐 공식 보기</button>
+
+    <!-- 힌트 -->
+    <div class="hint" id="hintBox">▶ 재생 버튼을 눌러 시뮬레이션을 시작하세요!</div>
+
+    <!-- 말풍선 & 파티클 -->
     <div id="bubble" class="bubble" style="display:none;">아야! 🌟</div>
     <div id="particles"></div>
   </div>
 
-  <!-- 그래프 -->
+  <!-- ── 그래프 ── -->
   <div class="gp">
     <div class="graph-area">
       <div class="graph-panel">
-        <div class="graph-title">📈 시간 - 위치</div>
-        <div style="height:calc(100% - 20px);"><canvas id="posChart"></canvas></div>
+        <div class="graph-title">📈 시간 - 위치 그래프</div>
+        <div style="height:calc(100% - 22px);">
+          <canvas id="posChart"></canvas>
+        </div>
       </div>
       <div class="graph-panel">
-        <div class="graph-title">⚡ 시간 - 속도</div>
-        <div style="height:calc(100% - 20px);"><canvas id="velChart"></canvas></div>
+        <div class="graph-title">⚡ 시간 - 속도 그래프</div>
+        <div style="height:calc(100% - 22px);">
+          <canvas id="velChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ── 상태 ──────────────────────────────────────────
-const state = {
-  simType: 'projectile',
-  params:  { v0:20, angle:45, g:9.8, accel:2 },
-  t:       0,
-  speed:   1,
-  playing: false,
-  planet:  'earth',
-  skin:    'ball',
-  newtonHit: false,
-};
-
+// ══════════════════════════════════════════
+// 상수 & 데이터
+// ══════════════════════════════════════════
 const PLANETS = {
-  earth:   { g:9.8,   color:'#00bfff' },
-  moon:    { g:1.62,  color:'#c0c0c0' },
-  mars:    { g:3.72,  color:'#ff6347' },
-  jupiter: { g:24.79, color:'#ffa500' },
-  space:   { g:0.01,  color:'#9b59b6' },
+  earth:   { g:9.8,   color:'#00bfff', name:'🌍 지구'  },
+  moon:    { g:1.62,  color:'#c8c8d8', name:'🌙 달'    },
+  mars:    { g:3.72,  color:'#ff6347', name:'🔴 화성'  },
+  jupiter: { g:24.79, color:'#ffa040', name:'🟠 목성'  },
+  space:   { g:0.01,  color:'#9b59b6', name:'🌌 우주'  },
 };
 
 const SKINS = {
-  ball:   { emoji:'⚽', size:18, type:'circle' },
-  cat:    { emoji:'🐱', size:24, type:'emoji'  },
-  rocket: { emoji:'🚀', size:26, type:'emoji'  },
-  apple:  { emoji:'🍎', size:22, type:'emoji'  },
-  star:   { emoji:'⭐', size:22, type:'emoji'  },
+  ball:   { emoji:'⚽', size:16, type:'circle' },
+  cat:    { emoji:'🐱', size:22, type:'emoji'  },
+  rocket: { emoji:'🚀', size:24, type:'emoji'  },
+  apple:  { emoji:'🍎', size:20, type:'emoji'  },
+  star:   { emoji:'⭐', size:20, type:'emoji'  },
 };
 
 const SIM_NAMES = {
-  projectile:'🎯 포물선 운동', freefall:'⬇️ 자유 낙하',
-  uniform:'➡️ 등속 운동', uniformAccel:'🏎️ 등가속도 운동',
+  projectile:'🎯 포물선 운동',
+  freefall:'⬇️ 자유 낙하',
+  uniform:'➡️ 등속 운동',
+  uniformAccel:'🏎️ 등가속도 운동',
   newton:'🍎 뉴턴의 사과나무',
 };
 
+// 고등학교 수준 공식 설명
 const FORMULAS = {
-  projectile:[
-    {label:'수평 위치', text:'x = v₀·cos(θ)·t'},
-    {label:'수직 위치', text:'y = v₀·sin(θ)·t - ½gt²'},
-    {label:'수평 속도', text:'vx = v₀·cos(θ)'},
-    {label:'수직 속도', text:'vy = v₀·sin(θ) - g·t'},
-  ],
-  freefall:[
-    {label:'위치', text:'y = ½·g·t²'},
-    {label:'속도', text:'v = g·t'},
-  ],
-  uniform:[
-    {label:'위치', text:'x = v₀·t'},
-    {label:'속도', text:'v = v₀ (일정)'},
-  ],
-  uniformAccel:[
-    {label:'위치', text:'x = v₀·t + ½·a·t²'},
-    {label:'속도', text:'v = v₀ + a·t'},
-  ],
-  newton:[
-    {label:'자유낙하', text:'y = ½·g·t²'},
-    {label:'속도',     text:'v = g·t'},
-  ],
+  projectile:{
+    sections:[
+      {
+        title:'📌 운동 방정식',
+        items:[
+          {label:'수평 위치',    text:'x = v₀cosθ · t'},
+          {label:'수직 위치',    text:'y = v₀sinθ · t - ½gt²'},
+          {label:'수평 속도 (일정)', text:'vₓ = v₀cosθ'},
+          {label:'수직 속도',    text:'vᵧ = v₀sinθ - gt'},
+        ]
+      },
+      {
+        title:'📌 최고점 & 사거리',
+        items:[
+          {label:'최고 높이',    text:'H = v₀²sin²θ / 2g'},
+          {label:'최대 사거리',  text:'R = v₀²sin2θ / g'},
+          {label:'체공 시간',    text:'T = 2v₀sinθ / g'},
+        ]
+      }
+    ],
+    tip:'💡 수평 방향: 등속 운동 / 수직 방향: 등가속도 운동'
+  },
+  freefall:{
+    sections:[
+      {
+        title:'📌 자유 낙하 (v₀=0)',
+        items:[
+          {label:'낙하 거리',    text:'y = ½gt²'},
+          {label:'낙하 속도',    text:'v = gt'},
+          {label:'속도-거리 관계', text:'v² = 2gy'},
+        ]
+      }
+    ],
+    tip:'💡 공기 저항 무시 / 중력만 작용'
+  },
+  uniform:{
+    sections:[
+      {
+        title:'📌 등속 직선 운동',
+        items:[
+          {label:'이동 거리',    text:'x = v₀ · t'},
+          {label:'속도',         text:'v = v₀ (일정)'},
+          {label:'가속도',       text:'a = 0'},
+        ]
+      }
+    ],
+    tip:'💡 알짜힘 = 0 → 속도 변화 없음 (뉴턴 1법칙)'
+  },
+  uniformAccel:{
+    sections:[
+      {
+        title:'📌 등가속도 직선 운동',
+        items:[
+          {label:'이동 거리',    text:'x = v₀t + ½at²'},
+          {label:'나중 속도',    text:'v = v₀ + at'},
+          {label:'속도-거리',    text:'v² = v₀² + 2ax'},
+          {label:'평균 속도',    text:'v̄ = (v₀ + v) / 2'},
+        ]
+      }
+    ],
+    tip:'💡 가속도 a 일정 → v-t 그래프는 직선'
+  },
+  newton:{
+    sections:[
+      {
+        title:'📌 만유인력 법칙',
+        items:[
+          {label:'만유인력',     text:'F = G · m₁m₂ / r²'},
+          {label:'중력 가속도',  text:'g = GM / R²'},
+        ]
+      },
+      {
+        title:'📌 자유 낙하 (사과)',
+        items:[
+          {label:'낙하 거리',    text:'y = ½gt²'},
+          {label:'낙하 속도',    text:'v = gt'},
+        ]
+      }
+    ],
+    tip:'💡 뉴턴이 사과가 떨어지는 걸 보고 만유인력을 발견!'
+  },
 };
 
-// ── 물리 계산 ─────────────────────────────────────
+// ══════════════════════════════════════════
+// 상태
+// ══════════════════════════════════════════
+const S = {
+  sim:'projectile',
+  params:{ v0:20, angle:45, g:9.8, accel:2 },
+  t:0, speed:1, playing:false,
+  planet:'earth', skin:'ball',
+  newtonHitDone:false,
+};
+
+// ══════════════════════════════════════════
+// 물리 계산
+// ══════════════════════════════════════════
 function calcState(sim, p, t) {
   const rad = p.angle * Math.PI / 180;
   switch(sim) {
     case 'projectile': {
-      const vx=p.v0*Math.cos(rad), vy0=p.v0*Math.sin(rad);
-      const x=vx*t, y=vy0*t-0.5*p.g*t*t, vyt=vy0-p.g*t;
-      return {x,y,vx,vy:vyt,speed:Math.sqrt(vx*vx+vyt*vyt)};
+      const vx = p.v0 * Math.cos(rad);
+      const vy0 = p.v0 * Math.sin(rad);
+      const x = vx * t;
+      const y = vy0 * t - 0.5 * p.g * t * t;
+      const vyt = vy0 - p.g * t;
+      return { x, y, vx, vy:vyt, speed:Math.sqrt(vx*vx + vyt*vyt) };
     }
-    case 'freefall': { const y=0.5*p.g*t*t,vy=p.g*t; return {x:0,y,vx:0,vy,speed:vy}; }
-    case 'uniform':  return {x:p.v0*t,y:0,vx:p.v0,vy:0,speed:p.v0};
+    case 'freefall': {
+      const y = 0.5 * p.g * t * t;
+      const vy = p.g * t;
+      return { x:0, y, vx:0, vy, speed:vy };
+    }
+    case 'uniform':
+      return { x:p.v0*t, y:0, vx:p.v0, vy:0, speed:p.v0 };
     case 'uniformAccel': {
-      const a=p.accel,x=p.v0*t+0.5*a*t*t,vt=p.v0+a*t;
-      return {x,y:0,vx:vt,vy:0,speed:vt};
+      const a = p.accel;
+      const x = p.v0*t + 0.5*a*t*t;
+      const vt = p.v0 + a*t;
+      return { x, y:0, vx:vt, vy:0, speed:Math.abs(vt) };
     }
-    default: return {x:0,y:0,vx:0,vy:0,speed:0};
+    default:
+      return { x:0, y:0, vx:0, vy:0, speed:0 };
   }
 }
 
 function getMaxT(sim, p) {
   switch(sim) {
-    case 'projectile': { const vy=p.v0*Math.sin(p.angle*Math.PI/180); return vy>0?(2*vy)/p.g:1; }
-    case 'freefall':   return Math.sqrt(300/p.g);
-    case 'newton':     return 4;
+    case 'projectile': {
+      const vy = p.v0 * Math.sin(p.angle * Math.PI / 180);
+      return vy > 0 ? (2 * vy) / p.g : 1;
+    }
+    case 'freefall':   return Math.sqrt((2 * 150) / p.g);
+    case 'newton':     return 5;
     default:           return 10;
   }
 }
 
-// ── 그래프 ────────────────────────────────────────
-const chartOpts = (yLabel) => ({
+// ══════════════════════════════════════════
+// 그래프 초기화
+// ══════════════════════════════════════════
+const chartCfg = (yLabel) => ({
   responsive:true, maintainAspectRatio:false, animation:false,
   plugins:{
-    legend:{display:true,labels:{color:'#9090aa',font:{size:9},boxWidth:8,padding:6}},
-    tooltip:{backgroundColor:'rgba(10,10,20,.9)',titleColor:'#00e5ff',bodyColor:'#e0e0e0',
-             borderColor:'rgba(0,229,255,.3)',borderWidth:1},
+    legend:{
+      display:true,
+      labels:{ color:'#9090aa', font:{size:9,family:'Inter'}, boxWidth:8, padding:8 }
+    },
+    tooltip:{
+      backgroundColor:'rgba(8,8,16,0.95)',
+      titleColor:'#00e5ff', bodyColor:'#e0e0e0',
+      borderColor:'rgba(0,229,255,0.3)', borderWidth:1,
+      titleFont:{family:'JetBrains Mono',size:10},
+      bodyFont:{family:'JetBrains Mono',size:10},
+    },
   },
   scales:{
-    x:{ticks:{color:'#5a5a7a',font:{size:8},maxTicksLimit:7},grid:{color:'rgba(0,229,255,0.06)'},
-       title:{display:true,text:'t (s)',color:'#5a5a7a',font:{size:9}}},
-    y:{ticks:{color:'#5a5a7a',font:{size:8},maxTicksLimit:5},grid:{color:'rgba(0,229,255,0.06)'},
-       title:{display:true,text:yLabel,color:'#5a5a7a',font:{size:9}}},
+    x:{
+      ticks:{ color:'#5a5a7a', font:{size:8,family:'JetBrains Mono'}, maxTicksLimit:8 },
+      grid:{ color:'rgba(0,229,255,0.06)' },
+      title:{ display:true, text:'시간 t (s)', color:'#5a5a7a', font:{size:9} }
+    },
+    y:{
+      ticks:{ color:'#5a5a7a', font:{size:8,family:'JetBrains Mono'}, maxTicksLimit:6 },
+      grid:{ color:'rgba(0,229,255,0.06)' },
+      title:{ display:true, text:yLabel, color:'#5a5a7a', font:{size:9} }
+    },
   },
 });
 
 const posChart = new Chart(document.getElementById('posChart'), {
-  type:'line', options:chartOpts('위치 (m)'),
-  data:{ labels:[], datasets:[
-    {label:'x (m)',data:[],borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,.08)',borderWidth:2,pointRadius:0,tension:.3,fill:false},
-    {label:'y (m)',data:[],borderColor:'#ff6b6b',backgroundColor:'rgba(255,107,107,.08)',borderWidth:2,pointRadius:0,tension:.3,fill:false},
-  ]},
+  type:'line',
+  options: chartCfg('위치 (m)'),
+  data:{
+    labels:[],
+    datasets:[
+      { label:'x 위치 (m)', data:[], borderColor:'#00e5ff',
+        backgroundColor:'rgba(0,229,255,0.06)', borderWidth:2,
+        pointRadius:0, tension:0.3, fill:false },
+      { label:'y 위치 (m)', data:[], borderColor:'#ff6b6b',
+        backgroundColor:'rgba(255,107,107,0.06)', borderWidth:2,
+        pointRadius:0, tension:0.3, fill:false },
+    ]
+  }
 });
 
 const velChart = new Chart(document.getElementById('velChart'), {
-  type:'line', options:chartOpts('속력 (m/s)'),
-  data:{ labels:[], datasets:[
-    {label:'속력 (m/s)',data:[],borderColor:'#00ff88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2,pointRadius:0,tension:.3,fill:true},
-  ]},
+  type:'line',
+  options: chartCfg('속력 (m/s)'),
+  data:{
+    labels:[],
+    datasets:[
+      { label:'속력 (m/s)', data:[], borderColor:'#00ff88',
+        backgroundColor:'rgba(0,255,136,0.06)', borderWidth:2,
+        pointRadius:0, tension:0.3, fill:true },
+    ]
+  }
 });
 
-let graphPos=[], graphVel=[];
+let gPos=[], gVel=[];
 
 function pushGraph(t, st) {
-  const last = graphPos[graphPos.length-1];
-  if (last && t - last.t < 0.05) return;
-  graphPos.push({t:+t.toFixed(3),x:+st.x.toFixed(2),y:+st.y.toFixed(2)});
-  graphVel.push({t:+t.toFixed(3),v:+st.speed.toFixed(2)});
-  if (graphPos.length>200) { graphPos.shift(); graphVel.shift(); }
-  const labels = graphPos.map(d=>d.t.toFixed(2));
+  const last = gPos[gPos.length-1];
+  if(last && t - last.t < 0.05) return;
+  gPos.push({ t:+t.toFixed(3), x:+st.x.toFixed(2), y:+st.y.toFixed(2) });
+  gVel.push({ t:+t.toFixed(3), v:+st.speed.toFixed(2) });
+  if(gPos.length > 300) { gPos.shift(); gVel.shift(); }
+
+  const labels = gPos.map(d => d.t.toFixed(2));
   posChart.data.labels = labels;
-  if (state.simType==='projectile') {
-    posChart.data.datasets[0].data = graphPos.map(d=>d.x);
-    posChart.data.datasets[1].data = graphPos.map(d=>d.y);
+  velChart.data.labels = labels;
+
+  if(S.sim === 'projectile') {
+    posChart.data.datasets[0].data = gPos.map(d=>d.x);
+    posChart.data.datasets[0].label = 'x 위치 (m)';
+    posChart.data.datasets[1].data = gPos.map(d=>d.y);
     posChart.data.datasets[1].hidden = false;
   } else {
-    posChart.data.datasets[0].data = graphPos.map(d=>state.simType==='freefall'?d.y:d.x);
-    posChart.data.datasets[0].label = state.simType==='freefall'?'y (m)':'x (m)';
+    posChart.data.datasets[0].data = gPos.map(d => S.sim==='freefall' ? d.y : d.x);
+    posChart.data.datasets[0].label = S.sim==='freefall' ? 'y 위치 (m)' : 'x 위치 (m)';
     posChart.data.datasets[1].hidden = true;
   }
-  velChart.data.labels = labels;
-  velChart.data.datasets[0].data = graphVel.map(d=>d.v);
+  velChart.data.datasets[0].data = gVel.map(d=>d.v);
+
   posChart.update('none');
   velChart.update('none');
 }
 
 function clearGraph() {
-  graphPos=[]; graphVel=[];
+  gPos=[]; gVel=[];
   posChart.data.labels=[];
-  posChart.data.datasets.forEach(d=>d.data=[]);
+  posChart.data.datasets.forEach(d=>{ d.data=[]; });
   velChart.data.labels=[];
-  velChart.data.datasets.forEach(d=>d.data=[]);
+  velChart.data.datasets.forEach(d=>{ d.data=[]; });
+  posChart.data.datasets[1].hidden = false;
   posChart.update('none');
   velChart.update('none');
 }
 
-// ── 캔버스 ────────────────────────────────────────
+// ══════════════════════════════════════════
+// 캔버스
+// ══════════════════════════════════════════
 const canvas = document.getElementById('simCanvas');
 const ctx    = canvas.getContext('2d');
 
 function resizeCanvas() {
   canvas.width  = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
+  render();
 }
 new ResizeObserver(resizeCanvas).observe(canvas);
 resizeCanvas();
 
-function drawNewton(cx,x,y,hit) {
-  cx.save(); cx.translate(x,y);
-  cx.fillStyle=hit?'#ff6b6b':'#4a90d9'; cx.fillRect(-12,-20,24,40);
-  cx.fillStyle='#ffd0a0'; cx.beginPath(); cx.arc(0,-32,16,0,Math.PI*2); cx.fill();
-  cx.fillStyle='#2c2c2c'; cx.fillRect(-14,-48,28,8); cx.fillRect(-10,-70,20,24);
-  cx.fillStyle='#333'; cx.beginPath();
-  cx.arc(-5,-34,2.5,0,Math.PI*2); cx.arc(5,-34,2.5,0,Math.PI*2); cx.fill();
-  cx.strokeStyle='#333'; cx.lineWidth=1.5; cx.beginPath();
-  hit ? cx.arc(0,-28,5,0,Math.PI) : cx.arc(0,-30,5,0,Math.PI,false);
+// 캔버스 헬퍼: 뉴턴 그리기
+function drawNewton(cx, x, y, hit) {
+  cx.save(); cx.translate(x, y);
+  // 몸통
+  cx.fillStyle = hit ? '#ff6b6b' : '#4a90d9';
+  cx.fillRect(-13,-22,26,44);
+  // 머리
+  cx.fillStyle = '#ffd0a0';
+  cx.beginPath(); cx.arc(0,-35,18,0,Math.PI*2); cx.fill();
+  // 모자
+  cx.fillStyle = '#1a1a1a';
+  cx.fillRect(-16,-52,32,9);
+  cx.fillRect(-11,-76,22,26);
+  // 눈
+  cx.fillStyle = '#333';
+  cx.beginPath();
+  cx.arc(-6,-37,3,0,Math.PI*2);
+  cx.arc(6,-37,3,0,Math.PI*2);
+  cx.fill();
+  // 입
+  cx.strokeStyle='#555'; cx.lineWidth=2; cx.beginPath();
+  if(hit) {
+    cx.arc(0,-31,6,0,Math.PI);
+  } else {
+    cx.arc(0,-32,5,0,Math.PI,false);
+  }
   cx.stroke();
-  cx.fillStyle='#2c3e50'; cx.fillRect(-10,18,8,20); cx.fillRect(2,18,8,20);
-  if(hit){ cx.fillStyle='#ffd700'; cx.font='13px serif'; [0,1,2,3].forEach(i=>{ const a=(i/4)*Math.PI*2; cx.fillText('★',Math.cos(a)*24-6,Math.sin(a)*24-32+5); }); }
+  // 다리
+  cx.fillStyle='#1a2a3a';
+  cx.fillRect(-11,20,9,24); cx.fillRect(2,20,9,24);
+  // 별 이펙트
+  if(hit) {
+    cx.fillStyle='#ffd700'; cx.font='bold 14px serif';
+    [0,1,2,3].forEach(i=>{
+      const a=(i/4)*Math.PI*2;
+      cx.fillText('★', Math.cos(a)*28-7, Math.sin(a)*28-35+6);
+    });
+  }
   cx.restore();
 }
 
-function drawTree(cx,x,y) {
-  cx.fillStyle='#8b6914'; cx.fillRect(x-8,y-80,16,80);
-  cx.fillStyle='#228b22'; cx.beginPath(); cx.arc(x,y-100,45,0,Math.PI*2); cx.fill();
-  cx.fillStyle='#2d9e2d'; cx.beginPath(); cx.arc(x-20,y-120,32,0,Math.PI*2); cx.fill();
-  cx.beginPath(); cx.arc(x+20,y-115,28,0,Math.PI*2); cx.fill();
+// 나무 그리기
+function drawTree(cx, x, y) {
+  // 기둥
+  cx.fillStyle='#6b4c11';
+  cx.fillRect(x-9, y-90, 18, 90);
+  // 잎 (3겹)
+  cx.fillStyle='#1a6b1a';
+  cx.beginPath(); cx.arc(x, y-110, 48, 0, Math.PI*2); cx.fill();
+  cx.fillStyle='#228b22';
+  cx.beginPath(); cx.arc(x-22, y-130, 35, 0, Math.PI*2); cx.fill();
+  cx.beginPath(); cx.arc(x+22, y-125, 30, 0, Math.PI*2); cx.fill();
+  cx.fillStyle='#2aaa2a';
+  cx.beginPath(); cx.arc(x, y-145, 26, 0, Math.PI*2); cx.fill();
 }
 
-function drawStars(cx,w,h) {
-  cx.fillStyle='rgba(255,255,255,0.75)';
-  for(let i=0;i<120;i++){ cx.beginPath(); cx.arc((i*137.5)%w,(i*97.3+41)%h,i%3===0?1.5:.8,0,Math.PI*2); cx.fill(); }
+// 별 배경
+function drawStars(cx, w, h) {
+  cx.fillStyle='rgba(255,255,255,0.8)';
+  for(let i=0;i<150;i++){
+    const x=(i*137.5)%w, y=(i*97.3+41)%h;
+    const r = i%5===0 ? 1.8 : i%3===0 ? 1.2 : 0.7;
+    cx.beginPath(); cx.arc(x,y,r,0,Math.PI*2); cx.fill();
+  }
 }
 
+// ── 메인 렌더 ──────────────────────────────────────
 function render() {
   const W=canvas.width, H=canvas.height;
-  const p=state.params, t=state.t;
-  const pl=PLANETS[state.planet], sk=SKINS[state.skin];
-  const maxT=getMaxT(state.simType,p);
-  const groundY=H-55;
+  if(W===0||H===0) return;
+
+  const p=S.params, t=S.t;
+  const pl=PLANETS[S.planet], sk=SKINS[S.skin];
+  const maxT=getMaxT(S.sim, p);
+  const groundY=H-60;
 
   ctx.clearRect(0,0,W,H);
 
-  // 배경
+  // ── 배경 ──
   const bg=ctx.createLinearGradient(0,0,0,H);
-  if(state.planet==='space'){bg.addColorStop(0,'#000005');bg.addColorStop(1,'#050015');}
-  else if(state.planet==='moon'){bg.addColorStop(0,'#0a0a1a');bg.addColorStop(1,'#1a1a30');}
-  else if(state.planet==='mars'){bg.addColorStop(0,'#1a0800');bg.addColorStop(1,'#3d1500');}
-  else if(state.planet==='jupiter'){bg.addColorStop(0,'#100800');bg.addColorStop(1,'#251a00');}
-  else{bg.addColorStop(0,'#0a0a1a');bg.addColorStop(1,'#0a1428');}
+  switch(S.planet){
+    case 'space':   bg.addColorStop(0,'#000008'); bg.addColorStop(1,'#060018'); break;
+    case 'moon':    bg.addColorStop(0,'#080810'); bg.addColorStop(1,'#141428'); break;
+    case 'mars':    bg.addColorStop(0,'#180600'); bg.addColorStop(1,'#380e00'); break;
+    case 'jupiter': bg.addColorStop(0,'#0e0600'); bg.addColorStop(1,'#201200'); break;
+    default:        bg.addColorStop(0,'#080814'); bg.addColorStop(1,'#0a1020'); break;
+  }
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
-  if(state.planet==='space'||state.planet==='moon') drawStars(ctx,W,H);
+  if(S.planet==='space'||S.planet==='moon') drawStars(ctx,W,H);
 
-  // 그리드
-  ctx.strokeStyle='rgba(0,229,255,0.05)'; ctx.lineWidth=1;
-  for(let x=0;x<=W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<=H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // ── 그리드 ──
+  ctx.strokeStyle='rgba(0,229,255,0.04)'; ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=60){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+  for(let y=0;y<=H;y+=60){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
 
-  // 바닥
+  // ── 바닥 ──
   const gnd=ctx.createLinearGradient(0,groundY,0,H);
-  if(state.planet==='mars'){gnd.addColorStop(0,'#8b3a00');gnd.addColorStop(1,'#5a2500');}
-  else if(state.planet==='moon'){gnd.addColorStop(0,'#5a5a6a');gnd.addColorStop(1,'#3a3a4a');}
-  else if(state.planet==='jupiter'){gnd.addColorStop(0,'#6b4c00');gnd.addColorStop(1,'#3d2b00');}
-  else if(state.planet==='space'){gnd.addColorStop(0,'#0d0020');gnd.addColorStop(1,'#000010');}
-  else{gnd.addColorStop(0,'#0d2b0d');gnd.addColorStop(1,'#061206');}
+  switch(S.planet){
+    case 'mars':    gnd.addColorStop(0,'#7a3000'); gnd.addColorStop(1,'#4a1c00'); break;
+    case 'moon':    gnd.addColorStop(0,'#484858'); gnd.addColorStop(1,'#2a2a38'); break;
+    case 'jupiter': gnd.addColorStop(0,'#5a3c00'); gnd.addColorStop(1,'#302000'); break;
+    case 'space':   gnd.addColorStop(0,'#0a0020'); gnd.addColorStop(1,'#05000e'); break;
+    default:        gnd.addColorStop(0,'#0a2a0a'); gnd.addColorStop(1,'#051005'); break;
+  }
   ctx.fillStyle=gnd; ctx.fillRect(0,groundY,W,H-groundY);
-  ctx.strokeStyle='rgba(0,229,255,0.2)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
 
-  // 행성 라벨
-  const plNames={earth:'🌍 지구',moon:'🌙 달',mars:'🔴 화성',jupiter:'🟠 목성',space:'🌌 우주'};
-  ctx.fillStyle=pl.color; ctx.font='700 12px Inter'; ctx.globalAlpha=0.7;
-  ctx.fillText(`${plNames[state.planet]}  g = ${pl.g} m/s²`,14,24);
+  // 바닥선 글로우
+  ctx.shadowColor='rgba(0,229,255,0.3)'; ctx.shadowBlur=6;
+  ctx.strokeStyle='rgba(0,229,255,0.25)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
+  ctx.shadowBlur=0;
+
+  // ── 행성 라벨 ──
+  ctx.fillStyle=pl.color; ctx.font='600 12px Inter'; ctx.globalAlpha=0.75;
+  ctx.fillText(`${pl.name}  |  g = ${pl.g} m/s²`, 16, 26);
   ctx.globalAlpha=1;
 
+  // ════════════════════════════════════════
   // 뉴턴 모드
-  if(state.simType==='newton'){
-    const nX=W*0.5, nY=groundY, tX=W*0.65;
-    const appleStart=groundY-175;
-    const appleY=Math.min(appleStart+0.5*p.g*t*t*22,groundY-12);
-    drawTree(ctx,tX,groundY);
-    ctx.strokeStyle='rgba(0,229,255,0.2)'; ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(tX,appleStart); ctx.lineTo(tX,appleY); ctx.stroke();
+  // ════════════════════════════════════════
+  if(S.sim==='newton'){
+    const nX=W*0.45, nY=groundY, tX=W*0.66;
+    const appleStartY = groundY-185;
+    const appleRawY   = appleStartY + 0.5*p.g*t*t*20;
+    const appleY      = Math.min(appleRawY, groundY-14);
+
+    drawTree(ctx, tX, groundY);
+
+    // 사과 낙하 궤적선
+    ctx.strokeStyle='rgba(0,229,255,0.18)';
+    ctx.setLineDash([4,5]); ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(tX, appleStartY); ctx.lineTo(tX, appleY); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.font='22px serif'; ctx.fillText('🍎',tX-11,appleY+8);
-    drawNewton(ctx,nX,nY,state.newtonHit);
-    if(appleY>=nY-50&&!state.newtonHit) triggerHit(nX-20,nY-85);
-    ctx.fillStyle='rgba(0,229,255,0.45)'; ctx.font='11px Inter';
-    ctx.fillText('▶ 재생 버튼을 눌러 사과를 떨어뜨리세요!',14,groundY-18);
+
+    // 사과
+    ctx.font='24px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('🍎', tX, appleY);
+
+    drawNewton(ctx, nX, nY, S.newtonHitDone);
+
+    // 충돌 감지
+    if(appleRawY >= nY-55 && !S.newtonHitDone){
+      S.newtonHitDone=true;
+      triggerHit(nX-20, nY-90);
+    }
+
+    // 안내 텍스트
+    if(t===0){
+      ctx.fillStyle='rgba(0,229,255,0.5)'; ctx.font='12px Inter';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText('▶ 재생 버튼을 눌러 사과를 떨어뜨리세요!', 16, groundY-20);
+    }
+
+    // 오버레이 수치 업데이트
+    updateOverlay(t, {x:0, y:Math.max(0,appleStartY-appleY), vx:0, vy:p.g*t, speed:p.g*t});
     return;
   }
 
-  // 원점/스케일
-  let oX=80,oY=groundY,sc=12;
-  if(state.simType==='freefall'){oX=W/2;oY=80;sc=6;}
-  if(state.simType==='uniform'||state.simType==='uniformAccel'){oX=60;oY=groundY-90;sc=16;}
+  // ════════════════════════════════════════
+  // 일반 시뮬레이션
+  // ════════════════════════════════════════
 
-  // 궤적
-  if(state.simType==='projectile'||state.simType==='freefall'){
+  // 원점 & 스케일 설정
+  let oX=80, oY=groundY, sc=11;
+  if(S.sim==='freefall')     { oX=W/2; oY=90; sc=5; }
+  if(S.sim==='uniform'||
+     S.sim==='uniformAccel') { oX=50; oY=groundY-100; sc=14; }
+
+  // 궤적 점선 (포물선, 낙하)
+  if(S.sim==='projectile'||S.sim==='freefall'){
     const pts=[];
-    for(let i=0;i<=200;i++){
-      const tt=(i/200)*maxT, st=calcState(state.simType,p,tt);
-      const px=state.simType==='projectile'?oX+st.x*sc:oX;
-      const py=state.simType==='projectile'?oY-st.y*sc:oY+st.y*sc;
-      if(px>=0&&px<=W&&py>=0&&py<=H+10) pts.push({x:px,y:py});
+    for(let i=0;i<=250;i++){
+      const tt=(i/250)*maxT;
+      const st=calcState(S.sim,p,tt);
+      const px=S.sim==='projectile' ? oX+st.x*sc : oX;
+      const py=S.sim==='projectile' ? oY-st.y*sc  : oY+st.y*sc;
+      if(px>=0&&px<=W&&py>=-10&&py<=H+10) pts.push({x:px,y:py});
     }
-    ctx.strokeStyle='rgba(0,229,255,0.35)'; ctx.setLineDash([5,7]); ctx.lineWidth=1.8;
-    ctx.beginPath(); pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y)); ctx.stroke();
-    ctx.setLineDash([]);
-    pts.forEach((p,i)=>{ if(i%12===0){ ctx.beginPath(); ctx.arc(p.x,p.y,2,0,Math.PI*2); ctx.fillStyle=`rgba(0,229,255,${0.1+(i/pts.length)*0.45})`; ctx.fill(); }});
-  }
-
-  // 물체 위치
-  const st=calcState(state.simType,p,t);
-  let objX=oX,objY=oY;
-  if(state.simType==='projectile'){objX=oX+st.x*sc;objY=oY-st.y*sc;}
-  else if(state.simType==='freefall'){objX=oX;objY=oY+st.y*sc;}
-  else{objX=oX+st.x*sc;objY=oY;}
-  objY=Math.min(objY,groundY-sk.size/2);
-  objX=Math.max(objX,sk.size/2);
-
-  // 속도 벡터 (포물선만)
-  if(state.simType==='projectile'&&t>0){
-    [[st.vx*3,0,'#00ff88'],[0,-st.vy*3,'#ff6b6b']].forEach(([dx,dy,col])=>{
-      if(Math.abs(dx)<1&&Math.abs(dy)<1) return;
-      ctx.strokeStyle=col; ctx.lineWidth=2;
-      ctx.beginPath(); ctx.moveTo(objX,objY); ctx.lineTo(objX+dx,objY+dy); ctx.stroke();
-      const ah=6,dxs=dx>=0?1:-1,dys=dy>=0?1:-1;
-      ctx.fillStyle=col; ctx.beginPath();
-      if(dx!==0){ctx.moveTo(objX+dx,objY);ctx.lineTo(objX+dx-dxs*ah,objY-ah/2);ctx.lineTo(objX+dx-dxs*ah,objY+ah/2);}
-      else{ctx.moveTo(objX,objY+dy);ctx.lineTo(objX-ah/2,objY+dy-dys*ah);ctx.lineTo(objX+ah/2,objY+dy-dys*ah);}
-      ctx.closePath(); ctx.fill();
+    // 궤적 점선
+    ctx.strokeStyle='rgba(0,229,255,0.3)';
+    ctx.setLineDash([5,8]); ctx.lineWidth=1.8;
+    ctx.beginPath();
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke(); ctx.setLineDash([]);
+    // 점
+    pts.forEach((pt,i)=>{
+      if(i%15===0){
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,2.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,229,255,${0.08+(i/pts.length)*0.5})`;
+        ctx.fill();
+      }
     });
   }
 
-  // 물체 그리기
-  ctx.save(); ctx.translate(objX,objY);
-  ctx.shadowColor=pl.color; ctx.shadowBlur=18;
+  // 현재 상태
+  const st=calcState(S.sim,p,t);
+  let objX=oX, objY=oY;
+  if(S.sim==='projectile')   { objX=oX+st.x*sc; objY=oY-st.y*sc; }
+  else if(S.sim==='freefall'){ objX=oX; objY=oY+st.y*sc; }
+  else                       { objX=oX+st.x*sc; objY=oY; }
+
+  // 바닥 & 경계 클램프
+  objY=Math.min(objY, groundY-sk.size);
+  objX=Math.max(objX, sk.size);
+  objX=Math.min(objX, W-sk.size);
+
+  // 속도 벡터 (포물선만)
+  if(S.sim==='projectile'&&t>0.01){
+    const vs=3.5;
+    // 수평 벡터
+    if(Math.abs(st.vx)>0.1){
+      const ex=objX+st.vx*vs, ey=objY;
+      const dir=st.vx>=0?1:-1;
+      ctx.strokeStyle='#00ff88'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(objX,objY); ctx.lineTo(ex,ey); ctx.stroke();
+      ctx.fillStyle='#00ff88'; ctx.beginPath();
+      ctx.moveTo(ex,ey); ctx.lineTo(ex-dir*8,ey-4); ctx.lineTo(ex-dir*8,ey+4);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle='rgba(0,255,136,0.8)'; ctx.font='10px JetBrains Mono';
+      ctx.textAlign=dir>0?'left':'right';
+      ctx.fillText(`vx=${st.vx.toFixed(1)}`, ex+dir*4, ey-6);
+    }
+    // 수직 벡터
+    if(Math.abs(st.vy)>0.1){
+      const ex=objX, ey=objY-st.vy*vs;
+      const dir=st.vy>=0?-1:1;
+      ctx.strokeStyle='#ff6b6b'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(objX,objY); ctx.lineTo(ex,ey); ctx.stroke();
+      ctx.fillStyle='#ff6b6b'; ctx.beginPath();
+      ctx.moveTo(ex,ey); ctx.lineTo(ex-4,ey-dir*8); ctx.lineTo(ex+4,ey-dir*8);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle='rgba(255,107,107,0.8)'; ctx.font='10px JetBrains Mono';
+      ctx.textAlign='left';
+      ctx.fillText(`vy=${st.vy.toFixed(1)}`, ex+6, ey);
+    }
+    ctx.textAlign='left';
+  }
+
+  // 이동 경로 흔적 (등속/등가속도)
+  if(S.sim==='uniform'||S.sim==='uniformAccel'){
+    for(let tt=0;tt<=t;tt+=0.2){
+      const s=calcState(S.sim,p,tt);
+      const tx=Math.min(oX+s.x*sc, W-sk.size);
+      ctx.beginPath(); ctx.arc(tx,oY,3,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,229,255,${0.1+(tt/t)*0.3})`;
+      ctx.fill();
+    }
+  }
+
+  // ── 물체 그리기 ──
+  ctx.save(); ctx.translate(objX, objY);
+  ctx.shadowColor=pl.color; ctx.shadowBlur=22;
+
   if(sk.type==='circle'){
-    const gr=ctx.createRadialGradient(-sk.size*.3,-sk.size*.3,2,0,0,sk.size);
-    gr.addColorStop(0,'#fff'); gr.addColorStop(.4,pl.color); gr.addColorStop(1,pl.color+'55');
-    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(0,0,sk.size,0,Math.PI*2); ctx.fill();
+    const gr=ctx.createRadialGradient(-sk.size*.35,-sk.size*.35,1,0,0,sk.size);
+    gr.addColorStop(0,'#ffffff');
+    gr.addColorStop(0.35,pl.color);
+    gr.addColorStop(1,pl.color+'44');
+    ctx.fillStyle=gr;
+    ctx.beginPath(); ctx.arc(0,0,sk.size,0,Math.PI*2); ctx.fill();
+    // 테두리
+    ctx.strokeStyle=pl.color; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(0,0,sk.size,0,Math.PI*2); ctx.stroke();
   } else {
-    ctx.shadowBlur=0; ctx.font=`${sk.size*2}px serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(sk.emoji,0,0);
+    ctx.shadowBlur=0;
+    ctx.font=`${sk.size*2}px serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(sk.emoji,0,0);
   }
   ctx.restore();
 
-  // 원점
-  ctx.beginPath(); ctx.arc(oX,oY,4,0,Math.PI*2);
-  ctx.fillStyle='rgba(0,229,255,0.4)'; ctx.fill();
+  // 원점 마커
+  ctx.beginPath(); ctx.arc(oX,oY,5,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,229,255,0.5)'; ctx.fill();
+  ctx.strokeStyle='rgba(0,229,255,0.8)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(oX,oY,5,0,Math.PI*2); ctx.stroke();
 
-  // 오버레이 수치 업데이트
-  document.getElementById('stT').textContent=`${t.toFixed(3)} s`;
-  document.getElementById('stX').textContent=`${st.x.toFixed(2)} m`;
-  document.getElementById('stY').textContent=`${st.y.toFixed(2)} m`;
-  document.getElementById('stV').textContent=`${st.speed.toFixed(2)} m/s`;
-  document.getElementById('stYRow').style.display=
-    (state.simType==='uniform'||state.simType==='uniformAccel')?'none':'flex';
+  // 오버레이 업데이트
+  updateOverlay(t, st);
 }
 
-// ── 애니메이션 루프 ───────────────────────────────
-let lastTime=null, rafId=null;
-function loop(now){
-  if(!state.playing){lastTime=null;return;}
-  const dt=lastTime?(now-lastTime)/1000:0;
-  lastTime=now;
-  const maxT=getMaxT(state.simType,state.params);
-  state.t=Math.min(Math.max(state.t+dt*state.speed,0),maxT);
-  document.getElementById('tcTime').textContent=`${state.t.toFixed(2)}s`;
-  document.getElementById('scrubber').value=state.t;
-  const st=calcState(state.simType,state.params,state.t);
-  pushGraph(state.t,st);
-  render();
-  if(state.t>=maxT||state.t<=0){stopPlay();return;}
-  rafId=requestAnimationFrame(loop);
-}
+// ── 오버레이 수치 업데이트 ──
+function updateOverlay(t, st) {
+  document.getElementById('stT').textContent = `${t.toFixed(3)} s`;
+  document.getElementById('stX').textContent = `${st.x.toFixed(2)} m`;
+  document.getElementById('stY').textContent = `${Math.max(0,st.y).toFixed(2)} m`;
+  document.getElementById('stV').textContent = `${st.speed.toFixed(2)} m/s`;
 
-function stopPlay(){
-  state.playing=false; lastTime=null;
-  document.getElementById('playBtn').textContent='▶';
-  document.getElementById('playBtn').classList.remove('active');
-}
+  const showY   = !(S.sim==='uniform'||S.sim==='uniformAccel');
+  const showVxy = S.sim==='projectile';
+  document.getElementById('stYRow').style.display  = showY  ? 'flex' : 'none';
+  document.getElementById('stVxRow').style.display = showVxy ? 'flex' : 'none';
+  document.getElementById('stVyRow').style.display = showVxy ? 'flex' : 'none';
 
-// ── 컨트롤 함수 ───────────────────────────────────
-function togglePlay(){
-  state.playing=!state.playing;
-  const btn=document.getElementById('playBtn');
-  if(state.playing){
-    btn.textContent='⏸'; btn.classList.add('active');
-    rafId=requestAnimationFrame(loop);
-  } else {
-    btn.textContent='▶'; btn.classList.remove('active');
+  if(showVxy){
+    document.getElementById('stVx').textContent = `${st.vx.toFixed(2)} m/s`;
+    document.getElementById('stVy').textContent = `${st.vy.toFixed(2)} m/s`;
   }
 }
 
-function resetSim(){
-  stopPlay(); state.t=0; state.newtonHit=false;
+// ══════════════════════════════════════════
+// 애니메이션 루프 (버그 수정 버전)
+// ══════════════════════════════════════════
+let rafId   = null;
+let lastNow = null;
+
+function loop(now) {
+  if(!S.playing) { lastNow=null; return; }
+
+  const dt    = lastNow ? (now - lastNow) / 1000 : 0;
+  lastNow     = now;
+  const maxT  = getMaxT(S.sim, S.params);
+  S.t         = Math.min(Math.max(S.t + dt * S.speed, 0), maxT);
+
+  // UI 업데이트
+  document.getElementById('tcTime').textContent = `${S.t.toFixed(2)}s`;
+  document.getElementById('scrubber').value     = S.t;
+
+  // 그래프 & 렌더
+  if(S.sim!=='newton') pushGraph(S.t, calcState(S.sim, S.params, S.t));
+  render();
+
+  // 종료 조건
+  if(S.t >= maxT || (S.speed < 0 && S.t <= 0)) {
+    stopPlay(); return;
+  }
+  rafId = requestAnimationFrame(loop);
+}
+
+function stopPlay() {
+  S.playing = false;
+  lastNow   = null;
+  if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('playBtn').classList.remove('on');
+}
+
+// ══════════════════════════════════════════
+// 컨트롤 함수들
+// ══════════════════════════════════════════
+function togglePlay() {
+  if(S.playing) {
+    stopPlay();
+  } else {
+    // 끝까지 갔으면 처음부터
+    const maxT = getMaxT(S.sim, S.params);
+    if(S.t >= maxT && S.speed > 0) { S.t=0; clearGraph(); }
+    if(S.t <= 0 && S.speed < 0)    { S.t=maxT; }
+
+    S.playing = true;
+    lastNow   = null;
+    document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('playBtn').classList.add('on');
+    document.getElementById('hintBox').style.display = 'none';
+    rafId = requestAnimationFrame(loop);
+  }
+}
+
+function resetSim() {
+  stopPlay();
+  S.t = 0; S.newtonHitDone = false;
   clearGraph();
-  document.getElementById('tcTime').textContent='0.00s';
-  document.getElementById('scrubber').value=0;
+  document.getElementById('tcTime').textContent  = '0.00s';
+  document.getElementById('scrubber').value      = 0;
+  document.getElementById('hintBox').style.display = 'block';
   render();
 }
 
-function scrub(val){
-  stopPlay(); state.t=parseFloat(val);
-  document.getElementById('tcTime').textContent=`${state.t.toFixed(2)}s`;
+function scrub(val) {
+  stopPlay();
+  S.t = parseFloat(val);
+  document.getElementById('tcTime').textContent = `${S.t.toFixed(2)}s`;
   render();
 }
 
-function setSpeed(v){
-  state.speed=v;
-  document.getElementById('speedLabel').textContent=`${v}x`;
-  document.querySelectorAll('.tc-wrap .btn:not(.ico)').forEach(b=>{
-    b.classList.toggle('active', parseFloat(b.textContent)===v && state.playing);
-  });
-  if(!state.playing){ state.playing=true; document.getElementById('playBtn').textContent='⏸'; document.getElementById('playBtn').classList.add('active'); rafId=requestAnimationFrame(loop); }
+function setSpeed(v) {
+  S.speed = v;
+  document.getElementById('speedLabel').textContent = `${v}x`;
+  // 역재생
+  if(v < 0 && S.t <= 0) S.t = getMaxT(S.sim, S.params);
+  // 재생 시작
+  if(!S.playing) togglePlay();
 }
 
-function setParam(key,val,labelId,unit){
-  state.params[key]=parseFloat(val);
-  document.getElementById(labelId).textContent=`${parseFloat(val).toFixed(1)} ${unit}`;
-  const maxT=getMaxT(state.simType,state.params);
-  document.getElementById('scrubber').max=maxT;
-  if(state.t>maxT) state.t=maxT;
+function setParam(key, val, labelId, unit) {
+  S.params[key] = parseFloat(val);
+  document.getElementById(labelId).textContent = `${parseFloat(val).toFixed(1)} ${unit}`;
+  const maxT = getMaxT(S.sim, S.params);
+  document.getElementById('scrubber').max = maxT;
+  if(S.t > maxT) S.t = maxT;
   render();
 }
 
-function setSim(type,btn){
-  state.simType=type; resetSim();
-  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('simBadge').textContent=SIM_NAMES[type];
-  // 슬라이더 표시/숨김
-  document.getElementById('sliderV0').style.display=(type==='freefall'||type==='newton')?'none':'block';
-  document.getElementById('sliderAngle').style.display=(type==='projectile')?'block':'none';
-  document.getElementById('sliderAccel').style.display=(type==='uniformAccel')?'block':'none';
-  // 공식
-  const fms=FORMULAS[type]||[];
-  document.getElementById('formulaList').innerHTML=fms.map(f=>`<div class="f-item"><div class="f-label">${f.label}</div><div class="f-text">${f.text}</div></div>`).join('');
-  document.getElementById('scrubber').max=getMaxT(type,state.params);
+function setSim(type, btn) {
+  stopPlay();
+  S.sim = type;
+  S.t   = 0;
+  S.newtonHitDone = false;
+  clearGraph();
+
+  document.querySelectorAll('.sim-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('simBadge').textContent = SIM_NAMES[type];
+
+  document.getElementById('sliderV0').style.display =
+    (type==='freefall'||type==='newton') ? 'none' : 'block';
+  document.getElementById('sliderAngle').style.display =
+    type==='projectile' ? 'block' : 'none';
+  document.getElementById('sliderAccel').style.display =
+    type==='uniformAccel' ? 'block' : 'none';
+
+  updateFormula(type);
+
+  const maxT = getMaxT(type, S.params);
+  document.getElementById('scrubber').max   = maxT;
+  document.getElementById('scrubber').value = 0;
+  document.getElementById('tcTime').textContent = '0.00s';
+  document.getElementById('hintBox').style.display = 'block';
+
   render();
 }
 
-function setPlanet(key,btn){
-  state.planet=key;
-  state.params.g=PLANETS[key].g;
-  document.getElementById('valG').textContent=`${PLANETS[key].g} m/s²`;
-  document.getElementById('sliderG').value=PLANETS[key].g;
-  document.querySelectorAll('.planet-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function setPlanet(key, btn) {
+  S.planet   = key;
+  S.params.g = PLANETS[key].g;
+  document.getElementById('valG').textContent = `${PLANETS[key].g} m/s²`;
+  document.getElementById('sliderG').value    = PLANETS[key].g;
+  document.querySelectorAll('.planet-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
   resetSim();
 }
 
-function setSkin(key,btn){
-  state.skin=key;
-  document.querySelectorAll('.skin-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function setSkin(key, btn) {
+  S.skin = key;
+  document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
   render();
 }
 
-function toggleFormula(){
-  const f=document.querySelector('.formula');
-  f.style.display=f.style.display==='none'?'block':'none';
+function toggleFormula() {
+  const box     = document.getElementById('formulaBox');
+  const showBtn = document.getElementById('formulaShowBtn');
+  if(box.style.display === 'none') {
+    box.style.display     = 'block';
+    showBtn.style.display = 'none';
+  } else {
+    box.style.display     = 'none';
+    showBtn.style.display = 'block';
+  }
 }
 
-// 뉴턴 히트 이펙트
-function triggerHit(x,y){
-  state.newtonHit=true;
-  const bubble=document.getElementById('bubble');
-  bubble.style.display='block'; bubble.style.left=(x+10)+'px'; bubble.style.top=(y-45)+'px';
-  const pc=document.getElementById('particles');
-  pc.innerHTML='';
-  for(let i=0;i<10;i++){
-    const d=document.createElement('div'); d.className='particle';
-    const tx=(Math.random()-.5)*80, ty=-(Math.random()*60+20);
-    const cols=['#ffd700','#ff6b6b','#00e5ff','#ff9f43'];
-    d.style.cssText=`left:${x}px;top:${y}px;background:${cols[i%4]};--tx:${tx}px;--ty:${ty}px;`;
+function updateFormula(type) {
+  const data = FORMULAS[type];
+  if(!data) return;
+  let html = '';
+  data.sections.forEach(sec => {
+    html += `<div class="f-section">
+      <div class="f-section-title">${sec.title}</div>`;
+    sec.items.forEach(item => {
+      html += `<div class="f-item">
+        <div class="f-label">${item.label}</div>
+        <div class="f-text">${item.text}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  if(data.tip) {
+    html += `
+      <div style="margin-top:8px;padding:7px 9px;
+                  background:rgba(255,215,0,0.08);border-radius:6px;
+                  border-left:2px solid #ffd700;font-size:10px;color:#c8a000;">
+        ${data.tip}
+      </div>`;
+  }
+  document.getElementById('formulaList').innerHTML = html;
+}
+
+function triggerHit(x, y) {
+  const bubble = document.getElementById('bubble');
+  bubble.style.display = 'block';
+  bubble.style.left    = (x + 10) + 'px';
+  bubble.style.top     = (y - 50) + 'px';
+
+  const pc   = document.getElementById('particles');
+  pc.innerHTML = '';
+  const cols = ['#ffd700','#ff6b6b','#00e5ff','#ff9f43','#00ff88'];
+  for(let i=0; i<12; i++){
+    const d = document.createElement('div');
+    d.className = 'particle';
+    const tx = (Math.random() - 0.5) * 100;
+    const ty = -(Math.random() * 80 + 20);
+    d.style.cssText =
+      `left:${x}px;top:${y}px;background:${cols[i%5]};--tx:${tx}px;--ty:${ty}px;`;
     pc.appendChild(d);
   }
-  setTimeout(()=>{
-    state.newtonHit=false; bubble.style.display='none'; pc.innerHTML='';
-  },1800);
+
+  setTimeout(() => {
+    bubble.style.display = 'none';
+    pc.innerHTML = '';
+  }, 2000);
 }
 
-// 초기 공식 세팅
-setSim('projectile', document.querySelector('.sim-tab.active'));
+// 초기화
+updateFormula('projectile');
 render();
 </script>
 </body>
